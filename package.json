@@ -1,0 +1,21 @@
+{
+  "name": "lumina-little-worlds",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "happy-dom": "20.0.2",
+    "terser": "5.44.0",
+    "@napi-rs/canvas": "0.1.80"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node src/game/verify.mjs && node src/landing/verify.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import {minify} from 'terser';
+const root=new URL('.',import.meta.url);
+const read=p=>fs.readFileSync(new URL(p,root),'utf8');
+const art=Object.fromEntries(['garden','tide','stars','time','flower','tree'].map(n=>[n,'data:image/webp;base64,'+fs.readFileSync(new URL('assets/'+n+'.webp',root)).toString('base64')]));
+let game=read('src/game/index.template.html');
+for(const [key,file] of [['STYLES','style.css'],['CORE','core.js'],['WORLD','world.js'],['ILLUSTRATION','illustration.js'],['GAME','game.js']])game=game.replace(`/* ${key} */`,()=>read('src/game/'+file).replaceAll('</script','<\\/script'));
+for(const key of ['ADVENTURE','FOCUS'])game=game.replace(`/* ${key} */`,()=>read('src/game/'+key.toLowerCase()+'.js').replaceAll('</script','<\\/script'));
+for(const [name,uri] of Object.entries(art))game=game.replaceAll('ASSET_'+name.toUpperCase(),uri);
+const three='/* Three.js license: '+read('node_modules/three/LICENSE')+' */\nconst THREE = {};\n(function(exports){\n'+read('node_modules/three/build/three.cjs')+'\n})(THREE);';
+const optimized=await minify(three,{compress:{passes:1},mangle:true,format:{comments:/Three\.js license/}});
+game=game.replace('/* THREE */',()=>optimized.code.replaceAll('</script','<\\/script'));
+const variables=':root{'+['garden','tide','stars','time'].map(n=>'--'+n+':url("'+art[n]+'")').join(';')+'}';
+const intro='data:audio/mpeg;base64,'+fs.readFileSync(new URL('assets/welcome.mp3',root)).toString('base64');
+let landing=read('src/landing/index.template.html').replace('/* STYLES */',()=>variables+read('src/landing/style.css')).replace('/* SCRIPT */',()=>read('src/landing/app.js').replaceAll('</script','<\\/script')).replace('/* GAME_PAYLOAD */',()=>JSON.stringify(game).replaceAll('<','\\u003c')).replaceAll('ASSET_FLOWER',art.flower).replaceAll('INTRO_AUDIO',intro);
+fs.mkdirSync(new URL('public/',root),{recursive:true});fs.writeFileSync(new URL('public/game.html',root),game);fs.writeFileSync(new URL('public/index.html',root),landing);
+console.log(`Built landing + game (${Buffer.byteLength(landing)} bytes), standalone game (${Buffer.byteLength(game)} bytes).`);
