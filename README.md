@@ -34,9 +34,10 @@ The build regenerates `public/game.html`, then embeds that game into `public/ind
 
 ## GitHub to Vercel
 
-Create a Git repository from the extracted LUMINA directory and push it to your GitHub repository. Import that repository into Vercel. Select LUMINA as the root directory only if you committed it inside a parent folder.
+Source: https://github.com/Leclezio69/lumina
+Production: https://lumina-seven-nu-14.vercel.app
 
-The included configuration selects **Other**, installs with `npm ci`, runs `npm run build`, and publishes `public`. No environment variables are required. The landing page is `/`; the standalone game is `/game.html`. Deployment has not been performed or verified for this package.
+The included configuration selects **Other**, installs with `npm ci`, runs `npm run build`, and publishes `public`. No environment variables are required. The landing page is `/`; the standalone game is `/game.html`.
 
 Official configuration reference: https://vercel.com/docs/project-configuration/vercel-json
 
